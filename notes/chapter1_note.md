@@ -33,4 +33,44 @@
 - **evolutionary methods**: policies that obtain the most reward, and random variations of them, are carried over to the next generation of policies, and the process repeats
 
 
-### An example: Tic Tac Toe 
+### An example: Tic Tac Toe (3x3)
+
+- the agent:
+- consider draws and losses to be equally bad (since in 3x3 Tic Tac Toe, you can never lose with perfect play)
+- the opponent is an imperfect player
+- *how might we construct a player that will find the imperfections in its opponent’s play and learn to maximize its chances of winning*
+
+- the approaches to this problem
+
+#### Minimax 
+- is not correct because it assumes a particular way of playing by the opponent
+- example: a minimax player would never reach a game state from which it could lose, even if in fact it always won from that state because of incorrect play by the opponent
+
+#### Dynamic Programming 
+- solve the problem by _computing_ an optimal solution for any opponent, but require as input a complete **specification of that opponent**
+  - including the probabilities with which the opponent makes each move in each board state - not available a priori
+  - such information can be estimated from experience - playing many games against the opponent → learn a model of the opponent’s behavior (up to some level of confidence) → apply dynamic programming to compute and optimal solution
+
+#### Evolutionary method 
+- solve the problem by searching the space of possible policies (a rule that tells the player what move to make for every state of the game) for one with a high probability of winning
+  - the probability for each policy is estimated by playing many games
+  - the frequency of wins is used to direct the next policy selection
+  - each policy change is made only after many games, and only the final outcome of each game is used (what happens during the games is ignored)
+
+#### The Approach of making use of a Value function 
+
+**1. Set up a table of numbers (one for each possible state of the game)**  
+  - each number will be the latest estimate of the probability of our winning from that state → the state’s **value**
+  - the whole number is the learned **value function**
+
+**2. we set the initial values of all the states to 0.5**
+
+**3. we the play many games againts the opponent**
+  - to select the moves we examine the states that would result from each of our possible and look up their current values in the table
+  - most of the time we move **greedily**
+  - occasionally, we select randomly from among the other moves instead → **exploratory moves**
+
+ **4. while playing we update the states' values using the formula** $V(S_t) \leftarrow V(S_t) + \alpha[V(S_{t+1} - V(S_t))]$
+   - $\alpha$ is a small positive fraction call **step-size parameter**, which influences the rate of learning
+   - if the step-size parameter is reduced properly over time, then this method converges, for any fixed opponent, to the true probabilities of winning from each state given optimal play by our player
+   - if the step-size parameter is not reduced all the way to zero over time, then this player also plays well against opponents that slowly change their way of playing
